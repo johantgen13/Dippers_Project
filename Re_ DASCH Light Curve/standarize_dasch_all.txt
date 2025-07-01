@@ -1,0 +1,27 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+with open('fullshort_APASS_J085815.7-430955.db.txt', 'r') as file:
+	table1 = []
+	table2 = []
+	for line in file:
+		if line[0]!='2':
+			continue
+		row = line.strip().split()
+		if row[2]=='0.00':
+			table2.append([row[0]]+[row[4]])
+		else: #elif float(row[3])<=80: #or the limit you choose
+			table1.append([row[0]]+[row[2]]+[row[3]])
+
+table1=np.array(table1,dtype=float)
+table2=np.array(table2,dtype=float)
+
+np.savetxt('dasch_data.txt',table1,header='Date (JD), mag, err')
+np.savetxt('dasch_lim.txt',table2,header='Date (JD), limiting magnitude')
+
+plt.errorbar(table1[:,0],table1[:,1],yerr=table1[:,2],mec=None,capsize=2.0,marker='o',color='C0',ms=2,ls='')
+plt.plot(table2[:,0],table2[:,1],marker='v',color='C0',ms=2,ls='')
+plt.xlabel('Date (JD)')
+plt.ylabel('Mag')
+plt.gca().invert_yaxis()
+plt.show()
